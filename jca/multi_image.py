@@ -4,15 +4,43 @@ import copy
 
 path = './sample_video/1.avi'
 cap = cv2.VideoCapture(path)
+
+
+#default red setting
+#lower_red=np.array([0, 50, 50])             
+#upper_red=np.array([5, 255, 255])
+
 lower_red=np.array([0, 50, 50])             
 upper_red=np.array([5, 255, 255])
+
+
 kernel = np.ones((10,10), np.uint8)
-while(cap.isOpened()):
+is_first_frame = True
+
+def getPixel(event, x, y, flags, param):
+    if event == cv2.EVENT_LBUTTONDBLCLK:    
+        print("x : " + str(x) + " , y : " + str(y))
+        print(hsv[y][x])
+        print("filter set")
+        global lower_red
+        global upper_red
+        lower_red=np.array([max(hsv[y][x][0]-3,0), max(hsv[y][x][1]-100,50), max(hsv[y][x][2]-100,50)])             
+        upper_red=np.array([min(hsv[y][x][0]+3,255), min(hsv[y][x][1]+100,255), min(hsv[y][x][2]+100,255)])
+
+while(cap.isOpened()):    
     ret, frame = cap.read()
     img = cv2.GaussianBlur(frame,(5,5),0)
-    r = int(np.sqrt(np.size(img))/100)
     hsv = cv2.cvtColor(img,cv2.COLOR_BGR2HSV) 
-    #img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    
+    if is_first_frame:
+        is_first_frame = False
+        r = int(np.sqrt(np.size(img))/100)
+        cv2.imshow('image',img)
+        cv2.setMouseCallback('image',getPixel)
+        k = cv2.waitKey(0) & 0xFF
+        if k == 27:         # wait for ESC key to exit   
+            continue
+
     mask_red=cv2.inRange(hsv,lower_red,upper_red)
     res_red=cv2.bitwise_and(img,img,mask=mask_red)
     img_dilation = cv2.dilate(mask_red, kernel, iterations=1)
