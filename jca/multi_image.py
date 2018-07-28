@@ -140,7 +140,7 @@ while(cap.isOpened()):
             #plt.title("Angular velocity : " + str(round(coef[0]/180.0*math.pi,3)) +"Rad/s", fontsize=30)
             ##
         ax = fig.add_subplot(111)
-        ax.scatter(range(0,len(angles_sum)), angles_sum, color='darkgreen', marker='^')
+        ax.scatter(range(0,len(angles_sum)), angles_sum, color='darkgreen')
         ax.set_xlim(0, len(angles_sum))
         ax.set_ylim(0, angles_sum[-1] * 1.1)
         fig.canvas.draw()
